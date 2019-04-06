@@ -1,0 +1,9 @@
+nrf24l01\delay.o: ..\SYSTEM\delay\delay.c
+nrf24l01\delay.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h
+nrf24l01\delay.o: ../Drivers/CMSIS/Include/core_cm3.h
+nrf24l01\delay.o: A:\Apps\Keil_v5\ARM\ARM\ARMCC\Bin\..\include\stdint.h
+nrf24l01\delay.o: ../Drivers/CMSIS/Include/core_cmInstr.h
+nrf24l01\delay.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+nrf24l01\delay.o: ../Drivers/CMSIS/Include/core_cmFunc.h
+nrf24l01\delay.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h
+nrf24l01\delay.o: ..\SYSTEM\delay\delay.h

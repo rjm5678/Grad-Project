@@ -1,0 +1,9 @@
+oled\delay.o: ..\SYSTEM\delay\delay.c
+oled\delay.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h
+oled\delay.o: ../Drivers/CMSIS/Include/core_cm3.h
+oled\delay.o: D:\Learn\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+oled\delay.o: ../Drivers/CMSIS/Include/core_cmInstr.h
+oled\delay.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+oled\delay.o: ../Drivers/CMSIS/Include/core_cmFunc.h
+oled\delay.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h
+oled\delay.o: ..\SYSTEM\delay\delay.h
