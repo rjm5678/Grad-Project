@@ -2,6 +2,7 @@
 import cv2
 import socket
 import numpy as np
+import threading
 
 def file_W(data):
     with open('./0.jpg', mode = 'ab') as img_W:
@@ -17,16 +18,20 @@ def read_img(img_path):
 
     return str_encode, file_len
 
+def recv_img(sock):
+    while True:
+        data, addr = sock.recvfrom(1024)
+
+        file_W(data)
+        if data == b'done':
+            print('done')
+            break
+
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(("", 9090))
 
-while True:
-    data, addr = sock.recvfrom(1024)
+#recvThread = threading.Thread(None, target=recv_img, args=sock)
+recv_img(sock);
 
-    file_W(data)
-    sock.sendto(b'ok', addr)
-    if data == b'done':
-        print('done')
-        break
 sock.close()
 
