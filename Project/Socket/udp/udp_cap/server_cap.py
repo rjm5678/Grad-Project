@@ -1,63 +1,54 @@
-import socket
-import threading
-import struct
-import time
+#!/usr/bin/python3
 import cv2
-import numpy
- 
-class Carame_Accept_Object:
-    def __init__(self,S_addr_port=("",8880)):
-        self.resolution=(640,480)       #分辨率
-        self.img_fps=15                 #每秒传输多少帧数
-        self.addr_port=S_addr_port
-        self.Set_Socket(self.addr_port)
- 
-    #设置套接字
-    def Set_Socket(self,S_addr_port):
-        self.server=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.server.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1) #端口可复用
-        self.server.bind(S_addr_port)
-        self.server.listen(5)
-        #print("the process work in the port:%d" % S_addr_port[1])
- 
- 
-def check_option(object,client):
-    #按格式解码，确定帧数和分辨率
-    info=struct.unpack('lhh',client.recv(8))
-    if info[0]>888:
-        object.img_fps=int(info[0])-888          #获取帧数
-        object.resolution=list(object.resolution)
-        # 获取分辨率
-        object.resolution[0]=info[1]
-        object.resolution[1]=info[2]
-        object.resolution = tuple(object.resolution)
-        return 1
-    else:
-        return 0
- 
-def RT_Image(object,client,D_addr):
-    if(check_option(object,client)==0):
-        return
-    camera=cv2.VideoCapture(0)                                #从摄像头中获取视频
-    img_param=[int(cv2.IMWRITE_JPEG_QUALITY),object.img_fps]  #设置传送图像格式、帧数
-    while(1):
-        time.sleep(0.1)             #推迟线程运行0.1s
-        _,object.img=camera.read()  #读取视频每一帧
- 
-        object.img=cv2.resize(object.img,object.resolution)     #按要求调整图像大小(resolution必须为元组)
-        _,img_encode=cv2.imencode('.jpg',object.img,img_param)  #按格式生成图片
-        img_code=numpy.array(img_encode)                        #转换成矩阵
-        object.img_data=img_code.tostring()                     #生成相应的字符串
-        try:
-            #按照相应的格式进行打包发送图片
-            client.send(struct.pack("lhh",len(object.img_data),object.resolution[0],object.resolution[1])+object.img_data)
-        except:
-            camera.release()        #释放资源
-            return
- 
-if __name__ == '__main__':
-    camera=Carame_Accept_Object()
-    while(1):
-        client,D_addr=camera.server.accept()
-        clientThread=threading.Thread(None,target=RT_Image,args=(camera,client,D_addr,))
-        clientThread.start()
+import socket
+import numpy as np
+import threading
+
+def file_W(data, path):
+    with open(path, mode = 'ab') as img_W:
+        img_W.write(data)
+
+def send_kbytes(data, sock, addr):
+    sock.sendto(data, addr)
+
+def read_img(img_path):
+    img = cv2.imread(img_path)
+    img = cv2.resize(img, (640, 480))
+    img_encode = cv2.imencode('.jpg', img)[1]
+    data_encode = np.array(img_encode)
+    str_encode = data_encode.tostring()
+    file_len = len(str_encode)
+
+    return str_encode, file_len
+
+def recv_img(sock, addr):
+    while True:
+        data, addr = sock.recvfrom(1024)
+
+        file_W(data, '{}.jpg'.format(0))
+        if data == b'done':
+            print('done')
+            break
+def clean_file(path):
+    with open(path, mode = 'w') as img_W:
+        img_W.write('')
+
+def send_img(data, data_len, sock, addr):
+    for i in range(0, data_len, 1024):
+        send_kbytes(data[i: i+1024], sock, addr)
+    
+    sock.sendto(b'done', addr)
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind(("", 9090))
+data, addr = sock.recvfrom(1024)
+if data == b'begin':
+    print('begin...')
+#recvThread = threading.Thread(None, target=recv_img, args=sock)
+    while True:
+        recv_img(sock, addr);
+        data, data_len = read_img('0.jpg')
+        send_img(data, data_len, sock, addr)
+        clean_file('0.jpg')
+sock.close()
+

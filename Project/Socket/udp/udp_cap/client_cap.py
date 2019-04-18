@@ -1,62 +1,77 @@
-#客户端
- 
- 
 import socket
 import cv2
-import threading
 import struct
-import numpy
+import time
+import numpy as np
+
+def get_socket():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    return sock
+
+def send_kbytes(data, sock):
+    sock.sendto(data, ("47.102.216.81", 9090))
  
-class Camera_Connect_Object:
-    def __init__(self,D_addr_port=["",8880]):
-        self.resolution=[640,480]
-        self.addr_port=D_addr_port
-        self.src=888+15                 #双方确定传输帧数，（888）为校验值
-        self.interval=0                 #图片播放时间间隔
-        self.img_fps=15                 #每秒传输多少帧数
- 
-    def Set_socket(self):
-        self.client=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.client.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
- 
-    def Socket_Connect(self):
-        self.Set_socket()
-        self.client.connect(self.addr_port)
-        print("IP is %s:%d" % (self.addr_port[0],self.addr_port[1]))
- 
-    def RT_Image(self):
-        #按照格式打包发送帧数和分辨率
-        self.name=self.addr_port[0]+" Camera"
-        self.client.send(struct.pack("lhh", self.src, self.resolution[0], self.resolution[1]))
-        while(1):
-            info=struct.unpack("lhh",self.client.recv(8))
-            buf_size=info[0]                    #获取读的图片总长度
-            if buf_size:
-                try:
-                    self.buf=b""                #代表bytes类型
-                    temp_buf=self.buf
-                    while(buf_size):            #读取每一张图片的长度
-                        temp_buf=self.client.recv(buf_size)
-                        buf_size-=len(temp_buf)
-                        self.buf+=temp_buf      #获取图片
-                        data = numpy.fromstring(self.buf, dtype='uint8')    #按uint8转换为图像矩阵
-                        self.image = cv2.imdecode(data, 1)                  #图像解码
-                        cv2.imshow(self.name, self.image)                   #展示图片
-                except:
-                    pass;
-                finally:
-                    if(cv2.waitKey(10)==27):        #每10ms刷新一次图片，按‘ESC’（27）退出
-                        self.client.close()
-                        cv2.destroyAllWindows()
-                        break
- 
-    def Get_Data(self,interval):
-        showThread=threading.Thread(target=self.RT_Image)
-        showThread.start()
- 
-if __name__ == '__main__':
-    camera=Camera_Connect_Object()
-    camera.addr_port[0]="127.0.0.1"
-    camera.addr_port=tuple(camera.addr_port)
-    camera.Socket_Connect()
-    camera.Get_Data(camera.interval)
+    return 0
+
+def encode_img(img):
+
+    
+
+    img = cv2.resize(img, (640, 480))
+    img_encode = cv2.imencode('.jpg', img)[1]
+    data_encode = np.array(img_encode)
+    str_encode = data_encode.tostring()
+    data_len = len(str_encode)
+
+    return str_encode, data_len
+
+def send_img(data, file_len, sock):
+    for i in range(0, file_len, 1024):
+        send_kbytes(data[i: i+1024], sock)
+      #  time.sleep(0.01)
+      
+    sock.sendto(b'done', ("47.102.216.81", 9090))
+    
+def file_W(data, path):
+    with open(path, mode = 'ab') as img_W:
+        img_W.write(data)
+        
+def clean_file(path):
+    with open(path, mode = 'w') as img_W:
+        img_W.write('')
+        
+def recv_img(sock, addr):
+    while True:
+        data, addr = sock.recvfrom(1024)
+        file_W(data, './../{}.jpg'.format(0))
+        if data == b'done':
+            print('done')
+            break
+       
+cap = cv2.VideoCapture(0)
+
+sock = get_socket()
+sock.sendto(b'begin', ("47.102.216.81", 9090))
+while True:
+    ret, img = cap.read()
+    data, data_len = encode_img(img)
+    send_img(data, data_len, sock)
+
+    recv_img(sock, ("47.102.216.81", 9090))
+    img = cv2.imread('./../{}.jpg'.format(0))
+    cv2.imshow('47.102.216.81', img)
+    clean_file('./../{}.jpg'.format(0))
+    if cv2.waitKey(5) == 27: # Decimal 27 = Esc
+        break
+    
+
+    
+    
+##message, addr = sock.recvfrom(1024)
+##print('Received from server: {}'.format(message))
+
+    
+    
+sock.close()
+cap.release()
