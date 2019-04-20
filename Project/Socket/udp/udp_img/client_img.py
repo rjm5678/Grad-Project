@@ -1,5 +1,5 @@
 import socket
-import cv2
+##import cv2
 import struct
 import time
 import numpy as np
@@ -9,7 +9,7 @@ def get_socket():
 
     return sock
 
-def send_kbytes(data, sock):
+def send_kbytes(data):
     sock.sendto(data, ("47.102.216.81", 9090))
  
     return True
@@ -25,30 +25,28 @@ def encode_img(img):
     return str_encode, file_len
 
 def send_img(data, file_len, sock):
-    send_kbytes(b'begin', sock)
+    send_kbytes(b'begin')
     
     if sock.recvfrom(1024)[0] == b'begin recv':
         for i in range(0, file_len, 1024):
-            send_kbytes(data[i: i+1024], sock)
-            time.sleep(0.01)
+            send_kbytes(data[i: i+1024])
+            time.sleep(0.005)
             
-        send_kbytes(b'done', sock)
+        send_kbytes(b'done')
         return True
         
     return False
 
-##cap = cv2.VideoCapture(0)
-img = cv2.imread('./train.jpg')
-data, file_len = encode_img(img)
-
-sock = get_socket()
-send_img(data, file_len, sock)
-
-
-##message, addr = sock.recvfrom(1024)
-##print('Received from server: {}'.format(message))
-
+if __name__ == '__main__':
+##    cap = cv2.VideoCapture(0)
+##    img = cv2.imread('./1.jpg')
+##    data, file_len = encode_img(img)
     
-    
-sock.close()
-##cap.release()
+    with open('./1.jpg', mode = 'rb') as img_R:
+        data = img_R.read()
+
+    sock = get_socket()
+    send_img(data, len(data), sock)
+       
+    sock.close()
+##    cap.release()
