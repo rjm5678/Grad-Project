@@ -20,6 +20,7 @@
 //广州市星翼电子科技有限公司  
 
 #define USE_WIFI
+#define USE_OV7725
 
 //传感器名字定义
 #define  OV7725 1
@@ -30,15 +31,23 @@
 #define  OV7725_WINDOW_WIDTH		320 // <=320
 #define  OV7725_WINDOW_HEIGHT		240 // <=240
 
+u8 RGB565toRGB24(u16 RGB565, u8* RGB24);
+
 extern u8 ov_sta;	//在exit.c里面定义
 extern u8 ov_frame;	//在timer.c里面定义
 extern u8 CONNECTED;
+u8 img[OV7725_WINDOW_WIDTH][3]={0};
+u8 buf[OV7725_WINDOW_WIDTH*3]={0};
 
 //更新LCD显示(OV7725)
 void OV7725_camera_refresh(void)
 {
-	u32 i,j;
+	u32 i,j,x,y;
  	u16 color;
+	u16 status;
+	u16 RGB565 = 0;
+
+	
 	if(ov_sta==2)
 	{
 		LCD_Scan_Dir(U2D_L2R);		//从上到下,从左到右 
@@ -61,13 +70,30 @@ void OV7725_camera_refresh(void)
 				OV7725_RCK=0;
 				color=OV7725_DATA;	//读数据
 				OV7725_RCK=1; 
-				color<<=8;  
+				
+				RGB565 = color;
+				color <<= 8;  
+
+				
 				OV7725_RCK=0;
 				color|=OV7725_DATA;	//读数据
 				OV7725_RCK=1;
 				GPIOB->CRL=0X33333333;
 				LCD_WR_DATA(color); 
+				
+				RGB565 <<= 8;
+				RGB565 = color;
+				
+				RGB565toRGB24(RGB565, img[j]);
+				
+
+			
 			}
+			for (x=0; x<320; x++)
+				for (y=0; y<3; y++)
+					buf[3*x+y]=img[x][y];
+			M8266WIFI_SPI_Send_Data(buf, 320*3, 0, &status);
+			
 		}
 		OV7725_CS=1;
 		OV7725_RCK=0;
@@ -76,22 +102,23 @@ void OV7725_camera_refresh(void)
  		ov_sta=0;					//清零帧中断标记
 		ov_frame++; 
 		LCD_Scan_Dir(DFT_SCAN_DIR);	//恢复默认扫描方向 
+	
 	} 
 }
 
  int main(void)
  {	
 
-
-	u8 buf[10]="Hi"; 
+	u8 i = 0;
+	u8 buf[1]={0xF0}; 
 	u8 send_len = 0;
 	u16 status;
-	//u8 sensor=0;
-	//u8 i;	
+	u8 sensor=0;
+	
 	delay_init();	    	 //延时函数初始化
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);// 设置中断优先级分组2
 	uart_init(9600);
-	//OV7670_Init();	
+	OV7670_Init();	
 	LED_Init();		  		//初始化与LED连接的硬件接口
 	LCD_Init();			   	//初始化LCD
 	usmart_dev.init(72);	//初始化USMART	
@@ -101,12 +128,26 @@ void OV7725_camera_refresh(void)
 	WIFI_Init();
 	while(1)
 	{
-		send_len = M8266WIFI_SPI_Send_Data(buf, sizeof(buf), 0, &status);
-		
+		M8266WIFI_SPI_Send_Data(buf, 1, 0, &status);
+		M8266WIFI_SPI_RecvData(buf, 1, 1000, 0, &status);
+		if (buf[0] == 0xFE)
+		{
+			LCD_ShowString(0,140,200,200,16,"ok");
+			break;
+		}
+//		i++;
 		delay_ms(1000);
+		
+//		if (i>10) 
+//		{
+//			break;
+//			
+//		}
 	}
 #endif
+	
 #ifdef USE_OV7725
+	LCD_Clear(WHITE);
 	LCD_ShowString(30,50,200,200,16,"Mini STM32");	
 	LCD_ShowString(30,70,200,200,16,"OV7725_OV7670 TEST");	
 	LCD_ShowString(30,90,200,200,16,"ATOM@ALIENTEK");
@@ -144,6 +185,9 @@ void OV7725_camera_refresh(void)
 	{	
 		if(sensor==OV7725)
 			OV7725_camera_refresh();
+//		M8266WIFI_SPI_RecvData(buf, 1, 1000, 0, &status);
+//		if (buf[0] == '1')
+//			while(1);
  		if(i!=ov_frame)		//DS0闪烁.
 		{
 			i=ov_frame;
