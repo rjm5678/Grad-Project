@@ -78,9 +78,9 @@ if __name__ == '__main__':
     while True:
         ret, img = cap.read()
         img = cv2.flip(img ,1)
-    ##    img = cv2.imread('./train.jpg')
-        img = img_preprocessing(img)
-        cv2.imshow('47.102.216.81', img)
+##        img = cv2.imread('./train.jpg')
+##        img = img_preprocessing(img)
+##        cv2.imshow('47.102.216.81', img)
         data, data_len = encode_img(img)
 
         with open('send.jpg', mode = 'wb') as img_W:
