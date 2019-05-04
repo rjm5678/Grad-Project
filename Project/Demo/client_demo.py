@@ -74,7 +74,7 @@ def img_preprocessing(img_raw):
 
 if __name__ == '__main__':
     cap = cv2.VideoCapture(0)
-
+    sock = get_socket()
     while True:
         ret, img = cap.read()
         img = cv2.flip(img ,1)
@@ -86,7 +86,7 @@ if __name__ == '__main__':
         with open('send.jpg', mode = 'wb') as img_W:
             img_W.write(data)
               
-        sock = get_socket()
+        
         send_img(data, data_len, sock)
 
         cv2.waitKey(5)
