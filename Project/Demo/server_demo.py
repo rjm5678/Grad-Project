@@ -27,14 +27,14 @@ def recv_img(sock, addr=("", 9090), path = './recv.jpg'):
     data, addr = sock.recvfrom(1024)
     if data == b'begin':
         sock.sendto(b'begin recv', addr)
-        while True:
-            data, addr = sock.recvfrom(1024)
+    while True:
+        data, addr = sock.recvfrom(1024)
 
-            file_W(data)
-            if data == b'done':
-    #            print('done')
-                break
-        return True
+        file_W(data)
+        if data == b'done':
+    #       print('done')
+                
+            return True
     return False
 
 def clean_file(path = 'recv.jpg'):
