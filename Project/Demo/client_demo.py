@@ -7,6 +7,7 @@ from scipy.misc import imresize
 
 img_size = 64
 channel_size = 1
+timeout = 0
 
 def get_socket():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -33,7 +34,12 @@ def send_img(data, file_len, sock):
     if sock.recvfrom(1024)[0] == b'begin recv':
         for i in range(0, file_len, 1024):
             send_kbytes(data[i: i+1024])
-            time.sleep(0.005)
+            time.sleep(0.001)
+##            timeout = timeout + 1
+##
+##            if timeout >= 1000:
+##                timeout = 0
+##                return False
             
         send_kbytes(b'done')
         return True
@@ -89,6 +95,6 @@ if __name__ == '__main__':
         
         send_img(data, data_len, sock)
 
-        cv2.waitKey(5)
+        
     sock.close()
     cap.release()
