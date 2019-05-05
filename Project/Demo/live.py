@@ -36,7 +36,7 @@ def main():
     sock.bind(("", 9090))
 
     while True:
-        clean_file()
+        
         recv_img(sock);
         
         img = cv2.imread('recv.jpg')

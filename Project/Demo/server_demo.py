@@ -26,15 +26,16 @@ def encode_img(img_path):
 def recv_img(sock, addr=("", 9090), path = './recv.jpg'):
     data, addr = sock.recvfrom(1024)
     if data == b'begin':
+        clean_file()
         sock.sendto(b'begin recv', addr)
-    while True:
-        data, addr = sock.recvfrom(1024)
+        while True:
+            data, addr = sock.recvfrom(1024)
 
-        file_W(data)
-        if data == b'done':
-    #       print('done')
-                
-            return True
+            file_W(data)
+            if data == b'done':
+            #   print('done')
+
+                return True
     return False
 
 def clean_file(path = 'recv.jpg'):
@@ -46,7 +47,7 @@ if __name__ == '__main__':
     
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind(("", 9090))
-    clean_file()
+    
     #recvThread = threading.Thread(None, target=recv_img, args=sock)
     recv_img(sock);
 
