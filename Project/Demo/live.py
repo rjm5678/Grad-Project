@@ -37,7 +37,7 @@ def main():
 
     while True:
         
-        recv_img(sock);
+        addr = recv_img(sock);
         
         img = cv2.imread('recv.jpg')
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -62,7 +62,7 @@ def main():
             # Say predict with multiprocessing
     ##      Process(target=os.system, args=(arg,)).start()
             old_char = Y_string
-
+        sock.sendto((Y_string).encode('utf-8'), addr)
 
 
 if __name__ == '__main__':

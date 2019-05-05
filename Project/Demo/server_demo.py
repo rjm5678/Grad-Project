@@ -35,7 +35,7 @@ def recv_img(sock, addr=("", 9090), path = './recv.jpg'):
             if data == b'done':
             #   print('done')
 
-                return True
+                return addr
     return False
 
 def clean_file(path = 'recv.jpg'):
