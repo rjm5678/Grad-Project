@@ -20,7 +20,6 @@
 //广州市星翼电子科技有限公司  
 
 #define USE_WIFI
-#define USE_OV7725
 
 //传感器名字定义
 #define  OV7725 1
@@ -39,6 +38,7 @@ extern u8 CONNECTED;
 u8 img[OV7725_WINDOW_WIDTH][3]={0};
 u8 buf[OV7725_WINDOW_WIDTH*3]={0};
 
+#ifdef USE_OV7725
 //更新LCD显示(OV7725)
 void OV7725_camera_refresh(void)
 {
@@ -93,7 +93,7 @@ void OV7725_camera_refresh(void)
 				for (y=0; y<3; y++)
 					buf[3*x+y]=img[x][y];
 			M8266WIFI_SPI_Send_Data(buf, 320*3, 0, &status);
-			
+			delay_ms(5);
 		}
 		OV7725_CS=1;
 		OV7725_RCK=0;
@@ -102,10 +102,10 @@ void OV7725_camera_refresh(void)
  		ov_sta=0;					//清零帧中断标记
 		ov_frame++; 
 		LCD_Scan_Dir(DFT_SCAN_DIR);	//恢复默认扫描方向 
-	
+
 	} 
 }
-
+#endif
  int main(void)
  {	
 
@@ -128,22 +128,18 @@ void OV7725_camera_refresh(void)
 	WIFI_Init();
 	while(1)
 	{
-		M8266WIFI_SPI_Send_Data(buf, 1, 0, &status);
+		//M8266WIFI_SPI_Send_Data(buf, 1, 0, &status);
 		M8266WIFI_SPI_RecvData(buf, 1, 1000, 0, &status);
 		if (buf[0] == 0xFE)
 		{
 			LCD_ShowString(0,140,200,200,16,"ok");
 			break;
 		}
-//		i++;
-		delay_ms(1000);
+
+		LCD_ShowString(0,140,200,200,16,buf);
 		
-//		if (i>10) 
-//		{
-//			break;
-//			
-//		}
 	}
+	while(1);
 #endif
 	
 #ifdef USE_OV7725
@@ -184,10 +180,12 @@ void OV7725_camera_refresh(void)
 	while(1)
 	{	
 		if(sensor==OV7725)
+		{
 			OV7725_camera_refresh();
-//		M8266WIFI_SPI_RecvData(buf, 1, 1000, 0, &status);
-//		if (buf[0] == '1')
-//			while(1);
+		}
+		M8266WIFI_SPI_RecvData(buf, 1, 1000, 0, &status);
+		if (buf[0] == '1')
+			while(1);
  		if(i!=ov_frame)		//DS0闪烁.
 		{
 			i=ov_frame;

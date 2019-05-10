@@ -38,31 +38,36 @@ def main():
     while True:
         
         addr = recv_img(sock);
-        
-        img = cv2.imread('recv.jpg')
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        
-        # Cropping image:
-        img_height, img_width = img.shape[:2]
-        side_width = int((img_width-img_height)/2)
-        img = img[0:img_height, side_width:side_width+img_height]
+        if addr != False:
+            img = cv2.imread('recv.jpg')
+            try:
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                
+                # Cropping image:
+                img_height, img_width = img.shape[:2]
+                side_width = int((img_width-img_height)/2)
+                img = img[0:img_height, side_width:side_width+img_height]
 
-        img = imresize(img, (img_size, img_size, channel_size))
-        img = 1-np.array(img).astype('float32')/255.
-        img = img.reshape(1, img_size, img_size, channel_size)
-        
-        Y_string, Y_possibility = predict(model, img)
+                img = imresize(img, (img_size, img_size, channel_size))
+                img = 1-np.array(img).astype('float32')/255.
+                img = img.reshape(1, img_size, img_size, channel_size)
+                
+                Y_string, Y_possibility = predict(model, img)
+            except:
+                print("error")
+            
+            
 
-        if Y_possibility < 0.4: # For secondary vocalization
-            old_char = ''
+            if Y_possibility < 0.4: # For secondary vocalization
+                old_char = ''
 
-        if old_char != Y_string and Y_possibility > 0.95:
-            print(Y_string, Y_possibility)
-    ##      arg = 'say {0}'.format(Y_string)
-            # Say predict with multiprocessing
-    ##      Process(target=os.system, args=(arg,)).start()
-            old_char = Y_string
-        sock.sendto((Y_string).encode('utf-8'), addr)
+            if old_char != Y_string and Y_possibility > 0.95:
+                print(Y_string, Y_possibility)
+        ##      arg = 'say {0}'.format(Y_string)
+                # Say predict with multiprocessing
+        ##      Process(target=os.system, args=(arg,)).start()
+                old_char = Y_string
+            sock.sendto((Y_string).encode('utf-8'), addr)
 
 
 if __name__ == '__main__':

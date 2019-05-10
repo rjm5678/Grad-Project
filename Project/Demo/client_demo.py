@@ -8,6 +8,7 @@ from scipy.misc import imresize
 img_size = 64
 channel_size = 1
 timeout = 0
+old_char = ''
 
 def get_socket():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -84,9 +85,7 @@ if __name__ == '__main__':
     while True:
         ret, img = cap.read()
         img = cv2.flip(img ,1)
-##        img = cv2.imread('./train.jpg')
-##        img = img_preprocessing(img)
-##        cv2.imshow('47.102.216.81', img)
+
         data, data_len = encode_img(img)
 
         with open('send.jpg', mode = 'wb') as img_W:
@@ -94,6 +93,11 @@ if __name__ == '__main__':
               
         
         send_img(data, data_len, sock)
+        Y_string = sock.recvfrom(1)[0]
+        if old_char != Y_string:
+            print(Y_string)
+            sock.sendto(Y_string, ("192.168.137.220", 9090))
+            old_char = Y_string
 
         
     sock.close()

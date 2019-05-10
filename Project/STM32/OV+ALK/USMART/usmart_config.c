@@ -22,13 +22,13 @@ struct _m_usmart_nametab usmart_nametab[]=
 
 	(void*)SCCB_WR_Reg,"u8 SCCB_WR_Reg(u8 reg,u8 data)", 
 	(void*)SCCB_RD_Reg,"u8 SCCB_RD_Reg(u8 reg)",
-	 
+#ifdef USE_OV7670	 
 	(void*)OV7670_Light_Mode,"void OV7670_Light_Mode(u8 mode)", 
 	(void*)OV7670_Color_Saturation,"void OV7670_Color_Saturation(s8 sat)", 
 	(void*)OV7670_Brightness,"void OV7670_Brightness(s8 bright)", 
 	(void*)OV7670_Contrast,"void OV7670_Contrast(s8 contrast)", 
 	(void*)OV7670_Special_Effects,"void OV7670_Special_Effects(u8 eft)",
-	
+#endif	
 	(void*)OV7725_Light_Mode,"void OV7725_Light_Mode(u8 mode)", 
 	(void*)OV7725_Color_Saturation,"void OV7725_Color_Saturation(s8 sat)", 
 	(void*)OV7725_Brightness,"void OV7725_Brightness(s8 bright)", 

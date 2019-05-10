@@ -21,20 +21,24 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.1.0
 Dialog DLL:      TARMSTM.DLL V1.66.0.0
  
 <h2>Project:</h2>
-D:\GradProject\STM32\OV+ALK\USER\OV7670_OV7725.uvprojx
-Project File Date:  04/27/2019
+C:\Users\rjm\Desktop\test\OV+ALK\USER\OV7670_OV7725.uvprojx
+Project File Date:  05/01/2019
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'A:\Apps\Keil_v5\ARM\ARM\ARMCC\Bin'
 Build target 'Target 1'
 compiling main.c...
-main.c(87): warning:  #550-D: variable "send_len"  was set but never used
+main.c(112): warning:  #177-D: variable "i"  was declared but never referenced
+  	u8 i = 0;
+main.c(114): warning:  #177-D: variable "send_len"  was declared but never referenced
   	u8 send_len = 0;
-main.c: 1 warning, 0 errors
+main.c(116): warning:  #177-D: variable "sensor"  was declared but never referenced
+  	u8 sensor=0;
+main.c: 3 warnings, 0 errors
 linking...
-Program Size: Code=36180 RO-data=7140 RW-data=512 ZI-data=1920  
+Program Size: Code=35540 RO-data=7180 RW-data=472 ZI-data=1920  
 FromELF: creating hex file...
-"..\OBJ\TIMER.axf" - 0 Error(s), 1 Warning(s).
+"..\OBJ\TIMER.axf" - 0 Error(s), 3 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -48,7 +52,7 @@ Package Vendor: Keil
   D:\Appsdata\Keil_v5\ARM\Keil\STM32F1xx_DFP\2.3.0\Device\Include
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:04
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

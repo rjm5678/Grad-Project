@@ -1127,56 +1127,44 @@ u8 WIFI_Init(void)
 	u8 success=0;
 	u8 param[15];
 	u8 param_len;
+	u8 connect_status;
+	char sta_ip[10]={0};
 	u16 status;
 	
 	LCD_ShowString(0,0,200,200,16,"ALK Init...");
 	M8266HostIf_Init();
 
-	/* Init WIFI Module via SPI */
-	success = M8266WIFI_Module_Init_Via_SPI();
-  if(success)
-	{
+	/************************ Init WIFI Module via SPI ************************/
+	if(M8266WIFI_Module_Init_Via_SPI())
 		LCD_ShowString(0,20,200,200,16,"ALK Init SPI success");
-	}
 	else
-	{
 		LCD_ShowString(0,20,200,200,16,"ALK Init SPI error");
-	}
-	/* Set Ap Mode */
-	success = M8266WIFI_SPI_Set_Opmode(AP_MODE, SAVED, &status);
+	
+	/*********************** Set STA Mode ****************************/
+	if(M8266WIFI_SPI_Set_Opmode(STA_MODE, UNSAVED, &status))
+		LCD_ShowString(0,40,200,200,16,"WIFI Set STA Mode success");
+	else
+		LCD_ShowString(0,40,200,200,16,"WIFI Set STA Mode error");
+	
+	/***************************** STA Connect to Ap *************************************/
+	success = M8266WIFI_SPI_STA_Connect_Ap("RJM", "1234567890", UNSAVED, 10, &status);
 	if(success)
 	{
-		LCD_ShowString(0,40,200,200,16,"WIFI Set AP Mode success");
+//		M8266WIFI_SPI_Get_STA_Connection_Status(&connect_status, &status);
+//		if (connect_status == 5)
+//			LCD_ShowString(0,60,200,200,16,"STA Connect To Ap success");	
 	}
 	else
 	{
-		LCD_ShowString(0,40,200,200,16,"WIFI Set AP Mode error");
+		LCD_ShowString(0,60,200,200,16,"STA Connect To Ap faied");
+		LCD_ShowxNum(0,80,status,10,16,0);		
 	}
+		if(M8266WIFI_SPI_Get_STA_IP_Addr(sta_ip, &status))
+			LCD_ShowString(0,100,200,200,16,sta_ip);
 	
-	/* Config Ap */
-	success = M8266WIFI_SPI_Config_AP("Anylinkin", "1234567890", WPA2_PSK, 6, SAVED, &status);
-	if(success)
-	{
-		LCD_ShowString(0,60,200,200,16,"WIFI Config AP Mode success");
-		if(M8266WIFI_SPI_Query_AP_Param(AP_PARAM_TYPE_IP_ADDR, param, &param_len, &status))
-		{
-			LCD_ShowString(0,80,200,200,16,"IP Addr: ");
-			LCD_ShowString(80,80,200,200,16,param);
-		}
-		
-		if(M8266WIFI_SPI_Query_AP_Param(AP_PARAM_TYPE_GATEWAY_ADDR, param, &param_len, &status))
-		{
-			LCD_ShowString(0,100,200,200,16,"GATEWAY Addr: ");
-			LCD_ShowString(110,100,200,200,16,param);
-		}
-			
-	}
-	else
-	{
-		LCD_ShowString(0,100,200,200,16,"WIFI Config AP Mode error");
-	}
 	
-	success = M8266WIFI_SPI_Setup_Connection(UDP, 9090, "192.168.4.2", 9090, 0, 255, &status);
+	
+	success = M8266WIFI_SPI_Setup_Connection(UDP, 9090, "192.168.137.1", 9090, 0, 255, &status);
 	if(success)
 	{
 		LCD_ShowString(0,120,200,200,16,"WIFI Connected");
@@ -1184,9 +1172,8 @@ u8 WIFI_Init(void)
 	}
 	else
 	{
-		LCD_ShowString(0,120,200,200,16,"WIFI Connect Faield");
+		LCD_ShowString(0,120,200,200,16,"WIFI Connect Faied");
 		while(1);
 	}
-	
-	return 1;
+
 }

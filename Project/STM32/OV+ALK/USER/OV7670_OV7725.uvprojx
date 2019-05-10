@@ -432,14 +432,19 @@
               <FilePath>..\HARDWARE\OV7670\sccb.c</FilePath>
             </File>
             <File>
-              <FileName>ov7670.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\OV7670\ov7670.c</FilePath>
-            </File>
-            <File>
               <FileName>ov7725.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\OV7725\ov7725.c</FilePath>
+            </File>
+            <File>
+              <FileName>ov7670.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>D:\芯片资料\OV7725摄像头模块\28，ATK-OV7725摄像头模块资料\2，程序源码\（库函数版本，适合MiniSTM32F1开发板）扩展实验9 摄像头实验\（库函数版本，适合MiniSTM32F1开发板）扩展实验9 摄像头实验\HARDWARE\OV7670\ov7670.c</FilePath>
+            </File>
+            <File>
+              <FileName>RGB565.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\RGB565\RGB565.C</FilePath>
             </File>
           </Files>
         </Group>
