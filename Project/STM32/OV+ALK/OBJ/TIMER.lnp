@@ -11,6 +11,8 @@
 "..\obj\ov7725.o"
 "..\obj\ov7670.o"
 "..\obj\rgb565.o"
+"..\obj\24l01.o"
+"..\obj\spi.o"
 "..\obj\delay.o"
 "..\obj\sys.o"
 "..\obj\usart.o"

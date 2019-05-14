@@ -13,6 +13,8 @@
 #include "brd_cfg.h"
 #include "misc.h"
 #include "M8266HostIf.h"
+#include "spi.h"
+#include "24l01.h"   
 
 //ALIENTEK Mini STM32开发板扩展实验9
 //摄像头实验
@@ -20,6 +22,7 @@
 //广州市星翼电子科技有限公司  
 
 #define USE_WIFI
+#define TX
 
 //传感器名字定义
 #define  OV7725 1
@@ -110,7 +113,7 @@ void OV7725_camera_refresh(void)
  {	
 
 	u8 i = 0;
-	u8 buf[1]={0xF0}; 
+	u8 buf[1]={0}; 
 	u8 send_len = 0;
 	u16 status;
 	u8 sensor=0;
@@ -118,25 +121,49 @@ void OV7725_camera_refresh(void)
 	delay_init();	    	 //延时函数初始化
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);// 设置中断优先级分组2
 	uart_init(9600);
-	OV7670_Init();	
+//	OV7670_Init();	
 	LED_Init();		  		//初始化与LED连接的硬件接口
-	LCD_Init();			   	//初始化LCD
+//	LCD_Init();			   	//初始化LCD
 	usmart_dev.init(72);	//初始化USMART	
- 	POINT_COLOR=RED;//设置字体为红色 
+//	 	NRF24L01_Init();    	//初始化NRF24L01  
+// 	POINT_COLOR=RED;//设置字体为红色 
 	 
+//		while(NRF24L01_Check())
+//		{
+//			
+//		}
+	GPIO_ResetBits(GPIOA,GPIO_Pin_8);
+	GPIO_ResetBits(GPIOD,GPIO_Pin_2);
+		
+#ifdef TX
+		
+//	NRF24L01_TX_Mode();		
+		
+#endif
+		
+		
+		
 	#ifdef USE_WIFI
-	WIFI_Init();
+	if(WIFI_Init())
+		GPIO_SetBits(GPIOD,GPIO_Pin_2);
+	
+	//if(M8266WIFI_SPI_Send_Data(buf, 1, 0, &status))
+		GPIO_SetBits(GPIOA,GPIO_Pin_8);
 	while(1)
-	{
-		//M8266WIFI_SPI_Send_Data(buf, 1, 0, &status);
+	{		
 		M8266WIFI_SPI_RecvData(buf, 1, 1000, 0, &status);
-		if (buf[0] == 0xFE)
+		if(buf[0] == '0')
+			GPIO_ResetBits(GPIOD,GPIO_Pin_2);
+		if(buf[0] == '5')
+			GPIO_ResetBits(GPIOA,GPIO_Pin_8);
+		
+		if(buf[0] == 'n')
 		{
-			LCD_ShowString(0,140,200,200,16,"ok");
-			break;
+			GPIO_SetBits(GPIOA,GPIO_Pin_8);
+			GPIO_SetBits(GPIOD,GPIO_Pin_2);
 		}
-
-		LCD_ShowString(0,140,200,200,16,buf);
+//		NRF24L01_TxPacket(buf);
+//		LCD_ShowString(0,140,200,200,16,buf);
 		
 	}
 	while(1);

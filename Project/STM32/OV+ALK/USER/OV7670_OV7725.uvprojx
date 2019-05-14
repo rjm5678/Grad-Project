@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\HARDWARE\LED;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\STM32F10x_FWLib\inc;..\CORE;..\HARDWARE\TIMER;..\HARDWARE\EXTI;..\HARDWARE\LCD;..\HARDWARE\OV7670;..\HARDWARE\KEY;..\USMART;..\HARDWARE\OV7725;..\M8266WIFI</IncludePath>
+              <IncludePath>..\HARDWARE\LED;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\STM32F10x_FWLib\inc;..\CORE;..\HARDWARE\TIMER;..\HARDWARE\EXTI;..\HARDWARE\LCD;..\HARDWARE\OV7670;..\HARDWARE\KEY;..\USMART;..\HARDWARE\OV7725;..\M8266WIFI;..\HARDWARE\NRF24L01;..\HARDWARE\SPI</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -445,6 +445,16 @@
               <FileName>RGB565.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\RGB565\RGB565.C</FilePath>
+            </File>
+            <File>
+              <FileName>24l01.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\NRF24L01\24l01.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\SPI\spi.c</FilePath>
             </File>
           </Files>
         </Group>

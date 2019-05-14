@@ -110,9 +110,9 @@
 #endif
 /// nCS
 #if   defined(MCU_IS_STM32F1XX)  // STM's STM32F1XX, using *GPIOA4* as nCS
-#define  M8266WIFI_SPI_nCS_GPIO_RCC_CLOCK_EN				RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE)
-#define  M8266WIFI_SPI_nCS_GPIO											GPIOA
-#define  M8266WIFI_SPI_nCS_PIN											GPIO_Pin_4
+#define  M8266WIFI_SPI_nCS_GPIO_RCC_CLOCK_EN				RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE)
+#define  M8266WIFI_SPI_nCS_GPIO											GPIOB
+#define  M8266WIFI_SPI_nCS_PIN											GPIO_Pin_12
 #elif defined(MCU_IS_STM32F2XX)  // STM's STM32F2XX, // using *GPIOA15* as nCS
 #define  M8266WIFI_SPI_nCS_GPIO_RCC_CLOCK_EN				RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE)
 #define  M8266WIFI_SPI_nCS_GPIO											GPIOA
@@ -194,7 +194,7 @@
 //            or  SPI0_MOSI=PD11, SPI0_MISO=PD12, SPI0_SCK=PD10
 //- If uses SPI1, SPI1_MOSI=PE10, SPI1_MISO=PE11, SPI1_SCK=PE9
 //            or  SPI1_MOSI=PC11, SPI1_MISO=PC12, SPI1_SCK=PC10
-#define  M8266WIFI_SPI_INTERFACE_NO							1   // STM32: 1~. for STM32F4xx, try to use SPI1 other than SPI2 and SPI3, since according to datasheet, SPI1 has a better performance than SPI2 and SPI3
+#define  M8266WIFI_SPI_INTERFACE_NO							2   // STM32: 1~. for STM32F4xx, try to use SPI1 other than SPI2 and SPI3, since according to datasheet, SPI1 has a better performance than SPI2 and SPI3
 																										// NXP:   0~ 
 //- If uses USART1, USART1_TXD=PA9, USART1_RXD=PA10
 //- If uses USART2, USART2_TXD=PA2, USART2_RXD=PA3   

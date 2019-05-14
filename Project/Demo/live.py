@@ -53,22 +53,23 @@ def main():
                 img = img.reshape(1, img_size, img_size, channel_size)
                 
                 Y_string, Y_possibility = predict(model, img)
+            
+            
+            
+
+                if Y_possibility < 0.4: # For secondary vocalization
+                    old_char = ''
+
+                if old_char != Y_string and Y_possibility > 0.95:
+                    print(Y_string, Y_possibility)
+            ##      arg = 'say {0}'.format(Y_string)
+                    # Say predict with multiprocessing
+            ##      Process(target=os.system, args=(arg,)).start()
+                    old_char = Y_string
+                sock.sendto((Y_string).encode('utf-8'), addr)
+
             except:
                 print("error")
-            
-            
-
-            if Y_possibility < 0.4: # For secondary vocalization
-                old_char = ''
-
-            if old_char != Y_string and Y_possibility > 0.95:
-                print(Y_string, Y_possibility)
-        ##      arg = 'say {0}'.format(Y_string)
-                # Say predict with multiprocessing
-        ##      Process(target=os.system, args=(arg,)).start()
-                old_char = Y_string
-            sock.sendto((Y_string).encode('utf-8'), addr)
-
 
 if __name__ == '__main__':
     main()

@@ -47,3 +47,5 @@
 ..\obj\main.o: ..\M8266WIFI\M8266WIFI_ops.h
 ..\obj\main.o: ..\M8266WIFI\brd_cfg.h
 ..\obj\main.o: ..\M8266WIFI\M8266HostIf.h
+..\obj\main.o: ..\HARDWARE\SPI\spi.h
+..\obj\main.o: ..\HARDWARE\NRF24L01\24l01.h

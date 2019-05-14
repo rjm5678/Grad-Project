@@ -38,12 +38,12 @@ void M8266HostIf_GPIO_CS_RESET_Init(void)
 {
   GPIO_InitTypeDef  GPIO_InitStructure;
 
-	//Initial STM32's GPIO for M8266WIFI_SPI_nCS
+	//Initial STM32's GPIO for M8266WIFI_SPI_nCS PB12
   M8266WIFI_SPI_nCS_GPIO_RCC_CLOCK_EN;  														// enable nCS GPIO clock
 	GPIO_OUTPUT_HIGH(M8266WIFI_SPI_nCS_GPIO,M8266WIFI_SPI_nCS_PIN);		// nCS output high initially	
 	GPIO_InitStructure_AS_GPIO_OUTPUT(M8266WIFI_SPI_nCS_GPIO,M8266WIFI_SPI_nCS_PIN);
 	
-	//Initial STM32's GPIO for M8266WIFI_nRESET
+	//Initial STM32's GPIO for M8266WIFI_nRESET PA2
   M8266WIFI_nRESET_GPIO_RCC_CLOCK_EN;  															// enable nRESET GPIO clock
 	GPIO_OUTPUT_HIGH(M8266WIFI_nRESET_GPIO,M8266WIFI_nRESET_PIN);		  // nRESET output high initially	
 	GPIO_InitStructure_AS_GPIO_OUTPUT(M8266WIFI_nRESET_GPIO,M8266WIFI_nRESET_PIN);
@@ -71,11 +71,11 @@ void M8266HostIf_SPI_Init(void)
   SPI_InitTypeDef   SPI_InitStructure;
 #if (M8266WIFI_SPI_INTERFACE_NO == 1)  
 	#if 1 // if use GPIOA5/6/7 for SPI1 SCK/MISO/MOSI
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); 						// enable the SPI1 GPIO CLOCK
-	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7;
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE); 						// enable the SPI1 GPIO CLOCK
+	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15;
   GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF_PP;									// SET GPIOs for SPI1
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
 	//GPIO_PinRemapConfig(GPIO_Remap_SPI1, ENABLE);										// no need to Enable GPIO Alternate for SPI1, since GPIOA5/6/7 for SPI1 is the default alternative
 	#elif 0 // if use GPIOB3/4/5 for SPI1 SCK/MISO/MOSI
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE); 						// enable the SPI1 GPIO CLOCK
@@ -87,9 +87,9 @@ void M8266HostIf_SPI_Init(void)
 	#else
 	#error You should specify the GPIO pins used on STM32F1 SPI1 in function M8266HostIf_SPI_Init() fromf the file M8266HostIf_STM32Fxx.c
 	#endif
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);						  //  Enable SPI1 CLOCK
-	RCC_APB2PeriphResetCmd(RCC_APB2Periph_SPI1, ENABLE);							//  Start to Reset SPI1
-	RCC_APB2PeriphResetCmd(RCC_APB2Periph_SPI1, DISABLE);							//  Stop reseting SPI1	
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);						  //  Enable SPI1 CLOCK
+	RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI2, ENABLE);							//  Start to Reset SPI1
+	RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI2, DISABLE);							//  Stop reseting SPI1	
 	
 	// end of if (M8266WIFI_SPI_INTERFACE_NO == 1) for STM32F1
 
@@ -1136,15 +1136,32 @@ u8 WIFI_Init(void)
 
 	/************************ Init WIFI Module via SPI ************************/
 	if(M8266WIFI_Module_Init_Via_SPI())
-		LCD_ShowString(0,20,200,200,16,"ALK Init SPI success");
+//		LCD_ShowString(0,20,200,200,16,"ALK Init SPI success");
+	;
 	else
+	{
 		LCD_ShowString(0,20,200,200,16,"ALK Init SPI error");
+//		return 0;
+	}
 	
 	/*********************** Set STA Mode ****************************/
 	if(M8266WIFI_SPI_Set_Opmode(STA_MODE, UNSAVED, &status))
-		LCD_ShowString(0,40,200,200,16,"WIFI Set STA Mode success");
+//		LCD_ShowString(0,40,200,200,16,"WIFI Set STA Mode success");
+	;
 	else
-		LCD_ShowString(0,40,200,200,16,"WIFI Set STA Mode error");
+	{
+//		LCD_ShowString(0,40,200,200,16,"WIFI Set STA Mode error");
+		return 0;
+	}
+	
+	if(M8266WIFI_SPI_Config_STA_StaticIpAddr("192.168.137.97", NULL, NULL, UNSAVED, &status))
+	;
+	else
+	{
+		return 0;
+	}
+	
+	
 	
 	/***************************** STA Connect to Ap *************************************/
 	success = M8266WIFI_SPI_STA_Connect_Ap("RJM", "1234567890", UNSAVED, 10, &status);
@@ -1156,24 +1173,25 @@ u8 WIFI_Init(void)
 	}
 	else
 	{
-		LCD_ShowString(0,60,200,200,16,"STA Connect To Ap faied");
-		LCD_ShowxNum(0,80,status,10,16,0);		
+//		LCD_ShowString(0,60,200,200,16,"STA Connect To Ap faied");
+//		LCD_ShowxNum(0,80,status,10,16,0);	
+		return 0;		
 	}
 		if(M8266WIFI_SPI_Get_STA_IP_Addr(sta_ip, &status))
-			LCD_ShowString(0,100,200,200,16,sta_ip);
+			//LCD_ShowString(0,100,200,200,16,sta_ip);
 	
 	
 	
 	success = M8266WIFI_SPI_Setup_Connection(UDP, 9090, "192.168.137.1", 9090, 0, 255, &status);
 	if(success)
 	{
-		LCD_ShowString(0,120,200,200,16,"WIFI Connected");
+//		LCD_ShowString(0,120,200,200,16,"WIFI Connected");
 		CONNECTED = 1;
 	}
 	else
 	{
-		LCD_ShowString(0,120,200,200,16,"WIFI Connect Faied");
-		while(1);
+//		LCD_ShowString(0,120,200,200,16,"WIFI Connect Faied");
+		return 0;
 	}
-
+	return 1;
 }
