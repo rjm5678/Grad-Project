@@ -12,12 +12,12 @@ old_char = ''
 
 def get_socket():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+    sock.bind(("", 9090))
     return sock
 
 def send_kbytes(data):
     sock.sendto(data, ("47.102.216.81", 9090))
- 
+    
     return True
 
 def encode_img(img):
@@ -82,21 +82,25 @@ def img_preprocessing(img_raw):
 if __name__ == '__main__':
     cap = cv2.VideoCapture(0)
     sock = get_socket()
+
     while True:
         ret, img = cap.read()
         img = cv2.flip(img ,1)
 
         data, data_len = encode_img(img)
 
-        with open('send.jpg', mode = 'wb') as img_W:
-            img_W.write(data)
+        try:
+            with open('send.jpg', mode = 'wb') as img_W:
+                img_W.write(data)
+        except:
+            print('send.jpg error')
               
         
         send_img(data, data_len, sock)
         Y_string = sock.recvfrom(1)[0]
         if old_char != Y_string:
             print(Y_string)
-            sock.sendto(Y_string, ("192.168.137.220", 9090))
+            sock.sendto(Y_string, ("192.168.137.97", 9090))
             old_char = Y_string
 
         
