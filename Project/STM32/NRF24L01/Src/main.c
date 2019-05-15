@@ -5,11 +5,11 @@
 #include "NRF24L01.h"
 #include "oled.h"
 
-#define TX
+#define RX
 
 int main(void)
 {
-	u8 RxData=1,TxData=0,sta=0;
+	u8 RxData=2,TxData=0,sta=0;
 	
   HAL_Init();
 
@@ -27,7 +27,7 @@ int main(void)
 		OLED_ShowString(32,0, "NRF ERROR");
   }
 	OLED_ShowString(0,0, "NRF OK");
-	LED1_RESET;
+
 
 #ifdef TX
 		NRF24L01_TX_Init();
@@ -49,11 +49,38 @@ while(1)
 {
 	sta = NRF24L01_RxPacket(&RxData);
 	OLED_ShowString(0, 2, "Rx:");
-	OLED_ShowNum(32, 2, RxData, 1, 16);
+	OLED_ShowNum(32, 2, RxData, 4, 16);
 	OLED_ShowString(0, 4, "sta:");
-	OLED_ShowNum(32, 4, sta, 1, 16);
+	if(sta==1)
+	{
+		OLED_ShowString(32, 4, "No Rx");
+	}
+	
+	
+	OLED_ShowString(0, 6, &RxData);
+	
+	
+	if(RxData=='5')
+	{
+			LED0_RESET;
 
+	}
+
+	if(RxData=='0')
+	{
+			LED1_RESET;
+
+	}
+
+	if(RxData=='n')
+	{
+			LED1_SET;
+			LED0_SET;
+	}
 }
 #endif
+
+
+
 
 }

@@ -1154,13 +1154,7 @@ u8 WIFI_Init(void)
 		return 0;
 	}
 	
-	if(M8266WIFI_SPI_Config_STA_StaticIpAddr("192.168.137.97", NULL, NULL, UNSAVED, &status))
-	;
-	else
-	{
-		return 0;
-	}
-	
+
 	
 	
 	/***************************** STA Connect to Ap *************************************/
@@ -1179,6 +1173,15 @@ u8 WIFI_Init(void)
 	}
 		if(M8266WIFI_SPI_Get_STA_IP_Addr(sta_ip, &status))
 			//LCD_ShowString(0,100,200,200,16,sta_ip);
+	
+	/****************************************************************************************/
+	if(M8266WIFI_SPI_Config_STA_StaticIpAddr("192.168.137.97", NULL, NULL, SAVED, &status))
+	//	LCD_ShowString(0,60,200,200,16,"WIFI Set 192.168.137.97");
+	;
+	else
+	{
+		return 0;
+	}
 	
 	
 	

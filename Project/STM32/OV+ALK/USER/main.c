@@ -125,25 +125,27 @@ void OV7725_camera_refresh(void)
 	LED_Init();		  		//初始化与LED连接的硬件接口
 //	LCD_Init();			   	//初始化LCD
 	usmart_dev.init(72);	//初始化USMART	
-//	 	NRF24L01_Init();    	//初始化NRF24L01  
+	 	NRF24L01_Init();    	//初始化NRF24L01  
 // 	POINT_COLOR=RED;//设置字体为红色 
-	 
-//		while(NRF24L01_Check())
-//		{
-//			
-//		}
-	GPIO_ResetBits(GPIOA,GPIO_Pin_8);
+	
 	GPIO_ResetBits(GPIOD,GPIO_Pin_2);
+	 
+		while(NRF24L01_Check())
+		{
+			GPIO_ResetBits(GPIOA,GPIO_Pin_8);
+		}
+		GPIO_SetBits(GPIOA,GPIO_Pin_8);
+
 		
 #ifdef TX
 		
-//	NRF24L01_TX_Mode();		
+	NRF24L01_TX_Mode();		
 		
 #endif
 		
 		
 		
-	#ifdef USE_WIFI
+#ifdef USE_WIFI
 	if(WIFI_Init())
 		GPIO_SetBits(GPIOD,GPIO_Pin_2);
 	
@@ -162,7 +164,7 @@ void OV7725_camera_refresh(void)
 			GPIO_SetBits(GPIOA,GPIO_Pin_8);
 			GPIO_SetBits(GPIOD,GPIO_Pin_2);
 		}
-//		NRF24L01_TxPacket(buf);
+		NRF24L01_TxPacket(buf);
 //		LCD_ShowString(0,140,200,200,16,buf);
 		
 	}
