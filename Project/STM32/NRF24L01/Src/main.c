@@ -24,9 +24,11 @@ int main(void)
 
   while (NRF24L01_Check())
 	{
-		OLED_ShowString(32,0, "NRF ERROR");
+		LED0_RESET;
+		LED1_RESET;
+		//OLED_ShowString(32,0, "NRF ERROR");
   }
-	OLED_ShowString(0,0, "NRF OK");
+	//OLED_ShowString(0,0, "NRF OK");
 
 
 #ifdef TX
@@ -66,13 +68,13 @@ while(1)
 
 	}
 
-	if(RxData=='0')
+	if(RxData=='n')
 	{
 			LED1_RESET;
 
 	}
 
-	if(RxData=='n')
+	if(RxData=='0')
 	{
 			LED1_SET;
 			LED0_SET;
